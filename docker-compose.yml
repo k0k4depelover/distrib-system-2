@@ -1,0 +1,103 @@
+networks:
+  private-net:
+    driver: bridge
+    internal: true
+
+  public-net:
+    driver: bridge
+
+  
+services:
+
+  eureka-server-grcp-server:
+    networks:
+      - private-net
+      - public-net
+    build: ./eureka-server
+    ports:
+      - 8761:8761
+
+  api-gateway:
+    networks:
+      - private-net
+      - public-net
+    build: ./api-gateway
+    ports:
+      - 7000:7000
+
+    depends_on:
+      - eureka-server-grcp-server
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+
+  session-stateful-server:
+    networks:
+      - private-net
+
+    build: ./cookies-auth
+
+    expose:
+      - "7001"
+    depends_on:
+      - eureka-server-grcp-server
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+  
+  web-socket-chat:
+    networks:
+      - private-net
+    
+    build: ./chat
+
+    ports:
+      - 7002:7002
+    depends_on:
+      - eureka-server-grcp-server
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+
+
+  redis-rl:
+    image: redis:alpine
+    container_name: redis-rate-limiter
+    networks:
+      - private-net
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-rl:/data
+
+  redis-l2:
+    image: redis:alpine
+    container_name: redis-cache-l2
+    networks:
+      - private-net
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-cache-l2:/data
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-sessions
+    
+    environment:
+      - POSTGRES_DB=postgres-sessions
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=s3cur3p4SSw0rd
+      
+    networks:
+      - private-net
+    ports:
+      - "5432:5432"
+      
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+      - postgres-sessions:/var/lib/postgresql/data 
+
+
+
+volumes:
+  redis-rl:
+  redis-cache-l2:
+  postgres-sessions:

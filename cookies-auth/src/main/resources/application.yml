@@ -1,0 +1,28 @@
+server:
+  port: 7001
+
+spring:
+  application:
+    name: cookies-auth
+  
+  datasource:
+    url: jdbc:postgresql://postgres-sessions:5432/postgres-sessions
+    username: admin
+    password: s3cur3p4SSw0rd
+    driver-class-name: org.postgresql.Driver
+  
+  data:
+    redis:
+      host: redis-cache-l2
+      port: 6379
+  session:
+    store-type: redis
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server-grcp-server:8761/eureka
