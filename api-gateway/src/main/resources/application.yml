@@ -1,0 +1,38 @@
+server:
+  port: 7000
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: redis-rate-limiter
+      port: 6379
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: cookies-auth
+              uri: lb://COOKIES-AUTH
+              predicates:
+                - Path=/auth/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 3
+                    redis-rate-limiter.burstCapacity: 8
+                    key-resolver: "#{@userAddressResolver}"
+            - id: chat
+              uri: lb://CHAT
+              predicates:
+              - Path=/chat/**
+              filters:
+              - name:               
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server-grcp-server:8761/eureka
+      fetch-register: true
