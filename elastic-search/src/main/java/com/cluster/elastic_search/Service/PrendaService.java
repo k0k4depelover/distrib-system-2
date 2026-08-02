@@ -27,7 +27,7 @@ public class PrendaService implements IPrendaService{
     }
 
     @Override
-    public Prenda crear(Prenda prenda) {
+    public Prenda crear(PrendaRequest prenda) {
         return repository.save(prenda);   
     }
 
@@ -79,11 +79,14 @@ public class PrendaService implements IPrendaService{
     }
 
     @Override
-    public void eliminar(String id) {
+    public Boolean eliminar(String id) {
         Optional<Prenda> prendaEliminar = repository.findById(id);
         if(prendaEliminar.isPresent()){
-            repository.deleteById(id);;
+            repository.deleteById(id);
+            return true;
         }
+
+        return false;
         
     }
     
