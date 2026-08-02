@@ -72,7 +72,7 @@ services:
       - redis-rl:/data
 
   redis-l2:
-    image: redis:alpinefg
+    image: redis:alpine
     container_name: redis-cache-l2-minimum
     networks:
       - private-net
