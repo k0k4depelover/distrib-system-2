@@ -17,7 +17,8 @@ Para brindar servicios de prediccion de prendas, ademas tiene pendiente la imple
 
 
 **Pendiente:**
-- *Remote procedure call hacia python*
+- *Servidor Elastic Search*
+- *Elastic Search con Remote procedure call hacia python*
 - *Sharding en bases de datos para las conexiones stateful*
 - *Soporte de load balancing en websocket (LB)*
 - *Frontend*
