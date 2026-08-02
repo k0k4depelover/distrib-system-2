@@ -10,6 +10,7 @@ networks:
 services:
 
   eureka-server-grcp-server:
+    container_name: eureka-server-grcp-server-minimum
     networks:
       - private-net
       - public-net
@@ -18,6 +19,7 @@ services:
       - 8761:8761
 
   api-gateway:
+    container_name: api-gateway-minimum
     networks:
       - private-net
       - public-net
@@ -31,6 +33,7 @@ services:
       - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
 
   session-stateful-server:
+    container_name: session-stateful-server-minimum
     networks:
       - private-net
 
@@ -44,6 +47,7 @@ services:
       - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
   
   web-socket-chat:
+    container_name: web-socket-chat-minimum
     networks:
       - private-net
     
@@ -59,7 +63,7 @@ services:
 
   redis-rl:
     image: redis:alpine
-    container_name: redis-rate-limiter
+    container_name: redis-rate-limiter-minimum
     networks:
       - private-net
     ports:
@@ -69,7 +73,7 @@ services:
 
   redis-l2:
     image: redis:alpine
-    container_name: redis-cache-l2
+    container_name: redis-cache-l2-minimum
     networks:
       - private-net
     ports:
@@ -79,7 +83,7 @@ services:
 
   postgres:
     image: postgres:16-alpine
-    container_name: postgres-sessions
+    container_name: postgres-sessions-minimum
     
     environment:
       - POSTGRES_DB=postgres-sessions
@@ -96,8 +100,32 @@ services:
       - postgres-sessions:/var/lib/postgresql/data 
 
 
+  elastic-search:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elastic-search-minimum
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    container_name: kibana-minimum
+    ports:
+      - 5601:5601
+    depends_on:
+      - elastic-search
+
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200    
 
 volumes:
+  es_data:
   redis-rl:
   redis-cache-l2:
   postgres-sessions:
