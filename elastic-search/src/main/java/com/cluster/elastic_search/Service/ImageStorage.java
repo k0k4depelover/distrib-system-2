@@ -1,6 +1,6 @@
 package com.cluster.elastic_search.Service;
 
-import org.apache.tomcat.util.file.ConfigurationSource.Resource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageStorage {

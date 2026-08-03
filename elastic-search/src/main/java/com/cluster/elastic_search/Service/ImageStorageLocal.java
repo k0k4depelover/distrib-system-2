@@ -57,7 +57,7 @@ public class ImageStorageLocal implements ImageStorage {
                 return resource;
             }
             else{
-                throw new AlmacenamientoException("No se encontro el archivo", e);
+                throw new AlmacenamientoException("No se encontro el archivo", null);
             }
 
         } catch(MalformedURLException e){
