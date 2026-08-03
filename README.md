@@ -24,3 +24,7 @@ Para brindar servicios de prediccion de prendas, ademas tiene pendiente la imple
 - *Soporte de load balancing en websocket (LB)*
 - *Frontend*
 - *Visibilidad y trazabilidad con grafana*
+
+**¿Que se esta trabajando?**
+
+Revisar el servicio Elastic, existe un README.md con los pasos a seguir en la siguiente sesion.
