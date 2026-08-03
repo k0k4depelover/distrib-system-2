@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PrendaRequest {
-
+    
     private String nombre;
 
     private String tipo;

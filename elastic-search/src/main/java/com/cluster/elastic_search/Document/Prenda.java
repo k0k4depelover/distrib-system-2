@@ -1,5 +1,7 @@
 package com.cluster.elastic_search.Document;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -29,8 +31,13 @@ public class Prenda {
     @Field(type = FieldType.Double)
     private Double precio;
 
+    @Field(type = FieldType.Date)
+    private LocalDateTime fechaSubida;
+
     @Field(type = FieldType.Keyword)
     private String imageUrl;
     
+    //@Field(type = FieldType.Keyword)
+    //private Long ownerId;
 
 }

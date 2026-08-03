@@ -1,13 +1,23 @@
 package com.cluster.elastic_search.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+
+import com.cluster.elastic_search.Config.Exceptions.AlmacenamientoException;
 import com.cluster.elastic_search.Document.Prenda;
 import com.cluster.elastic_search.Dto.PrendaRequest;
 import com.cluster.elastic_search.Repository.PrendaRepository;
@@ -15,11 +25,17 @@ import com.cluster.elastic_search.Repository.PrendaRepository;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 
 
-
+@Service
 public class PrendaService implements IPrendaService{
 
     public PrendaRepository repository;
     public ElasticsearchOperations elasticsearchOperations;
+
+    @Value("${app.image.storage-path}")
+    public String storagePath;
+
+    @Value("${app.images.base-url}")
+    public String baseUrl;
 
     public PrendaService(PrendaRepository repository, ElasticsearchOperations elasticsearchOperations){
         this.repository= repository;
@@ -89,5 +105,7 @@ public class PrendaService implements IPrendaService{
         return false;
         
     }
+
+
     
 }
