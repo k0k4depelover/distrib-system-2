@@ -9,8 +9,8 @@ networks:
   
 services:
 
-  eureka-server-grcp-server:
-    container_name: eureka-server-grcp-server-minimum
+  eureka-server-grpc-server:
+    container_name: eureka-server-grpc-server-minimum
     networks:
       - private-net
       - public-net
@@ -28,9 +28,9 @@ services:
       - 7000:7000
 
     depends_on:
-      - eureka-server-grcp-server
+      - eureka-server-grpc-server
     environment:
-      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
 
   session-stateful-server:
     container_name: session-stateful-server-minimum
@@ -42,9 +42,9 @@ services:
     expose:
       - "7001"
     depends_on:
-      - eureka-server-grcp-server
+      - eureka-server-grpc-server
     environment:
-      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
   
   web-socket-chat:
     container_name: web-socket-chat-minimum
@@ -56,10 +56,25 @@ services:
     ports:
       - 7002:7002
     depends_on:
-      - eureka-server-grcp-server
+      - eureka-server-grpc-server
     environment:
-      - eureka.client.service-url.defaultZone=http://eureka-server-grcp-server:8761/eureka
+      - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
 
+
+  elastic-search-server:
+    container_name: elastic-server
+    networks:
+      - private-net
+    
+    build: ./elastic-search
+
+    ports:
+      - 7003:7003
+    depends_on:
+      - eureka-server-grpc-server
+
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
 
   redis-rl:
     image: redis:alpine
