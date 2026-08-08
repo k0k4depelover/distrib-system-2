@@ -37,7 +37,7 @@ public class Prenda {
     @Field(type = FieldType.Keyword)
     private String imageUrl;
     
-    //@Field(type = FieldType.Keyword)
-    //private Long ownerId;
+    @Field(type = FieldType.Text, analyzer = "spanish")
+    private String nombreOriginal;
 
 }

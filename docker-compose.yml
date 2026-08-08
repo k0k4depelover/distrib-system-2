@@ -101,9 +101,9 @@ services:
     container_name: postgres-sessions-minimum
     
     environment:
-      - POSTGRES_DB=postgres-sessions
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=s3cur3p4SSw0rd
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       
     networks:
       - private-net
@@ -122,6 +122,9 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+    networks:
+      - private-net
     ports:
       - "9200:9200"
     
@@ -131,6 +134,9 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
     container_name: kibana-minimum
+    networks:
+      - private-net
+    
     ports:
       - 5601:5601
     depends_on:
@@ -139,8 +145,24 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200    
 
+  mysql:
+    image: mariadb:lts-alpine
+    container_name: mysql-images-metadata-minimum
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - private-networks
+    volumes:
+        - mysql-data:/var/lib/mysql
+
 volumes:
   es_data:
   redis-rl:
   redis-cache-l2:
   postgres-sessions:
+  mysql-data:
