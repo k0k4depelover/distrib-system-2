@@ -12,3 +12,8 @@ Actualizaciòn:
 * Una Base de datos Indexada para busqueda de texto -> Elastic
 * Una Base de datos que soporte subir, actualizar datos garantizando la Integridad Relacional y las propiedades ACID -> MySQL
 * Bucket donde se almacenan streams de bytes.
+
+
+
+Model -> Referencia a un objeto de Base de Datos relacional.
+Document -> Referencia a un objeto de Base de Datos no relacional.

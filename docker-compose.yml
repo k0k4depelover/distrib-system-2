@@ -1,12 +1,9 @@
 networks:
   private-net:
     driver: bridge
-    internal: true
-
   public-net:
     driver: bridge
 
-  
 services:
 
   eureka-server-grpc-server:
@@ -16,7 +13,7 @@ services:
       - public-net
     build: ./eureka-server
     ports:
-      - 8761:8761
+      - "8761:8761"
 
   api-gateway:
     container_name: api-gateway-minimum
@@ -25,8 +22,7 @@ services:
       - public-net
     build: ./api-gateway
     ports:
-      - 7000:7000
-
+      - "7000:7000"
     depends_on:
       - eureka-server-grpc-server
     environment:
@@ -36,43 +32,36 @@ services:
     container_name: session-stateful-server-minimum
     networks:
       - private-net
-
     build: ./cookies-auth
-
     expose:
       - "7001"
     depends_on:
       - eureka-server-grpc-server
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
-  
+
   web-socket-chat:
     container_name: web-socket-chat-minimum
     networks:
       - private-net
-    
+      - public-net
     build: ./chat
-
     ports:
-      - 7002:7002
+      - "7002:7002"
     depends_on:
       - eureka-server-grpc-server
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
 
-
   elastic-search-server:
     container_name: elastic-server
     networks:
       - private-net
-    
     build: ./elastic-search
-
-    ports:
-      - 7003:7003
+    expose:
+      - "7003"
     depends_on:
       - eureka-server-grpc-server
-
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
 
@@ -81,8 +70,6 @@ services:
     container_name: redis-rate-limiter-minimum
     networks:
       - private-net
-    ports:
-      - "6379:6379"
     volumes:
       - redis-rl:/data
 
@@ -91,29 +78,21 @@ services:
     container_name: redis-cache-l2-minimum
     networks:
       - private-net
-    ports:
-      - "6380:6379"
     volumes:
       - redis-cache-l2:/data
 
   postgres:
     image: postgres:16-alpine
     container_name: postgres-sessions-minimum
-    
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      
     networks:
       - private-net
-    ports:
-      - "5432:5432"
-      
     volumes:
       - ./init-db:/docker-entrypoint-initdb.d
       - postgres-sessions:/var/lib/postgresql/data 
-
 
   elastic-search:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
@@ -122,12 +101,8 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-
     networks:
       - private-net
-    ports:
-      - "9200:9200"
-    
     volumes:
       - es_data:/usr/share/elasticsearch/data
 
@@ -136,29 +111,26 @@ services:
     container_name: kibana-minimum
     networks:
       - private-net
-    
+      - public-net
     ports:
-      - 5601:5601
+      - "5601:5601"
     depends_on:
       - elastic-search
-
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200    
+      - ELASTICSEARCH_HOSTS=http://elastic-search:9200    
 
-  mysql:
+  mariadb:
     image: mariadb:lts-alpine
     container_name: mysql-images-metadata-minimum
-    ports:
-      - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     networks:
-      - private-networks
+      - private-net
     volumes:
-        - mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
 
 volumes:
   es_data:

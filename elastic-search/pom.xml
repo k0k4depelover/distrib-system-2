@@ -38,6 +38,11 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-elasticsearch</artifactId>
 		</dependency>
 		<dependency>
@@ -78,6 +83,13 @@
 			<artifactId>tika-core</artifactId>
 			<version>2.9.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+
 	</dependencies>
 
 
