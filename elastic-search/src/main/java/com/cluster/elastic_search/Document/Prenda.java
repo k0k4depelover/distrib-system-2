@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Prenda {
     @Id
-    private String id;
+    private Long id;
 
     @Field(type = FieldType.Text, analyzer = "spanish")
     private String nombre;
@@ -31,4 +31,6 @@ public class Prenda {
     @Field(type = FieldType.Double)
     private Double precio;
 
+    @Field(type = FieldType.Text)
+    private String imageUrl;
 }

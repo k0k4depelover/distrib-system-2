@@ -120,7 +120,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://elastic-search:9200    
 
   mariadb:
-    image: mariadb:lts-alpine
+    image: mariadb
     container_name: mysql-images-metadata-minimum
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
