@@ -20,5 +20,8 @@ public class SecurityFilterConfig {
                 ).formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .build();
-    }
+    
+    
+    
+            }
 }

@@ -65,7 +65,6 @@ public class SecurityFilter implements GlobalFilter, Ordered {
                 .bodyToMono(UserSessionDto.class)
                 .flatMap(dto -> {
                     caffeineCache.put(sessionId, dto);
-                    // CORRECCIÓN: Capturamos el exchange mutado aquí también antes de pasarlo al chain
                     ServerWebExchange mutatedExchange = mutateHeaders(exchange, dto);
                     return chain.filter(mutatedExchange);
                 })
