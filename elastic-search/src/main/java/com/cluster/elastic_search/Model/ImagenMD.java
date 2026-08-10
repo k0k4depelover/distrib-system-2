@@ -29,4 +29,6 @@ public class ImagenMD {
     @Column(name = "nombre_original")
     private String nombreOriginal;
 
+    @Column(name = "id_usuario")
+    private Long idUsuario;
 }

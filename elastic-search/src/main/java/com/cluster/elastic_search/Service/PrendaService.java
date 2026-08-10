@@ -51,12 +51,12 @@ public class PrendaService implements IPrendaService{
     }
 
     @Override
-    public Optional<Prenda> obtenerPorId(String id) {
+    public Optional<Prenda> obtenerPorId(Long id) {
         return repository.findById(id);    
     }
 
     @Override
-    public Boolean editarPrenda(String id, PrendaRequest prenda) {
+    public Boolean editarPrenda(Long id, PrendaRequest prenda) {
         Optional<Prenda> optionalPrenda = repository.findById(id);
 
         if(optionalPrenda.isEmpty()){
@@ -98,7 +98,7 @@ public class PrendaService implements IPrendaService{
     }
 
     @Override
-    public Boolean eliminar(String id) {
+    public Boolean eliminar(Long id) {
         Optional<Prenda> prendaEliminar = repository.findById(id);
         if(prendaEliminar.isPresent()){
             repository.deleteById(id);

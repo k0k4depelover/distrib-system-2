@@ -6,24 +6,26 @@ import com.cluster.elastic_search.Model.ImagenMD;
 
 
 public class ImageResponseDTO {
-    Long id;
+
     private LocalDateTime fechaSubida;
     private String imageUrl;
     private String nombreOriginal;
+    private Long idUsuario;
 
-    public ImageResponseDTO(Long id, LocalDateTime fechaSubida, String imageUrl, String nombreOriginal) {
-        this.id=id;
+    public ImageResponseDTO(LocalDateTime fechaSubida, String imageUrl, String nombreOriginal, Long idUsuario) {
         this.fechaSubida=fechaSubida;
         this.imageUrl= imageUrl;
         this.nombreOriginal= nombreOriginal;
+        this.idUsuario= idUsuario;
     }
 
     private static ImageResponseDTO desde(ImagenMD image){
         return new ImageResponseDTO(
-            image.getId(), 
             image.getFechaSubida(), 
             image.getImageUrl(), 
-            image.getNombreOriginal());
+            image.getNombreOriginal(),
+            image.getIdUsuario()
+        );
     }
 
 }
