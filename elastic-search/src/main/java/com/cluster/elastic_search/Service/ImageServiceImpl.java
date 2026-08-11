@@ -43,7 +43,7 @@ public class ImageServiceImpl implements ImageService{
         try{
             ImagenMD entidad = new ImagenMD(LocalDateTime.now(), filename, url, idUsuario);
             repository.save(entidad);
-            return ImageResponseDTO.desde(file, filename);
+            return ImageResponseDTO.desde(entidad);
         }
         catch(Exception e){
             storage.eliminar(filename);
