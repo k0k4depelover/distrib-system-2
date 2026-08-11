@@ -17,6 +17,7 @@ import lombok.Setter;
 public class ImagenMD {
 
     @Id
+    @Column(name = "id_image")
     private Long id;
 
 
@@ -31,4 +32,13 @@ public class ImagenMD {
 
     @Column(name = "id_usuario")
     private Long idUsuario;
+
+    public ImagenMD(LocalDateTime fechaSubida, String imageUrl, String nombreOriginal, Long idUsuario) {
+        this.fechaSubida = fechaSubida;
+        this.imageUrl = imageUrl;
+        this.nombreOriginal = nombreOriginal;
+        this.idUsuario = idUsuario;
+    }
+
+    
 }

@@ -1,4 +1,4 @@
-package com.auth.statefull.cookies_auth.Config;
+package com.auth.statefull.cookies_auth.Config.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
