@@ -19,7 +19,7 @@ public class ImageResponseDTO {
         this.idUsuario= idUsuario;
     }
 
-    private static ImageResponseDTO desde(ImagenMD image){
+    public static ImageResponseDTO desde(ImagenMD image){
         return new ImageResponseDTO(
             image.getFechaSubida(), 
             image.getImageUrl(), 
