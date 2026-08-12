@@ -30,13 +30,18 @@ public class ImagenMD {
     @Column(name = "nombre_imagen")
     private String nombreImagen;
 
+    @Column(name = "nombre_original")
+    private String nombreOriginal;
+
+
     @Column(name = "id_usuario")
     private Long idUsuario;
 
-    public ImagenMD(LocalDateTime fechaSubida, String imageUrl, String nombreImagen, Long idUsuario) {
+    public ImagenMD(LocalDateTime fechaSubida, String imageUrl, String nombreImagen, String nombreOriginal, Long idUsuario) {
         this.fechaSubida = fechaSubida;
         this.imageUrl = imageUrl;
         this.nombreImagen = nombreImagen;
+        this.nombreOriginal= nombreOriginal;
         this.idUsuario = idUsuario;
     }
 

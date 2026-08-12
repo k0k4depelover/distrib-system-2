@@ -8,7 +8,7 @@ import lombok.*;
 public class PrendaRequest {
     private Long id;
 
-    private String nombre;
+    private String nombreImagen;
 
     private String tipo;
 

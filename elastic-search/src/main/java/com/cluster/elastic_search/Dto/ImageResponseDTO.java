@@ -9,8 +9,9 @@ public class ImageResponseDTO {
 
     private LocalDateTime fechaSubida;
     private String nombreOriginal;
+    private String imageUrl;
 
-    public ImageResponseDTO(LocalDateTime fechaSubida, String nombreOriginal) {
+    public ImageResponseDTO(LocalDateTime fechaSubida, String nombreOriginal, String urlImagen) {
         this.fechaSubida=fechaSubida;
         this.nombreOriginal= nombreOriginal;
     }
@@ -18,7 +19,8 @@ public class ImageResponseDTO {
     public static ImageResponseDTO desde(ImagenMD image){
         return new ImageResponseDTO(
             image.getFechaSubida(), 
-            image.getNombreImagen()
+            image.getNombreOriginal(),
+            image.getImageUrl()
         );
     }
 

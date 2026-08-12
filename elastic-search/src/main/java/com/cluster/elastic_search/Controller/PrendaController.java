@@ -2,9 +2,13 @@ package com.cluster.elastic_search.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cluster.elastic_search.Document.Prenda;
+import com.cluster.elastic_search.Dto.ImageResponseDTO;
 import com.cluster.elastic_search.Dto.PrendaRequest;
+import com.cluster.elastic_search.Service.ImageService;
+import com.cluster.elastic_search.Service.PrendaService;
 import com.cluster.elastic_search.Service.PrendaServiceImpl;
 
 import java.util.List;
@@ -26,20 +30,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/prendas")
 public class PrendaController {
-    private final PrendaServiceImpl service;
-
-    public PrendaController(PrendaServiceImpl service) {
-        this.service = service;
+    private final PrendaService prendaService;
+    private final ImageService imageService;
+    public PrendaController(PrendaService prendaService, ImageService imageService) {
+        this.prendaService = prendaService;
+        this.imageService = imageService;
     }
     
     @GetMapping
     public List<Prenda> obtenerTodos() {
-        return service.obtenerTodas();
+        return prendaService.obtenerTodas();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Prenda> obtenerPorId(@RequestParam Long id) {
-        Optional<Prenda> prendaPorId = service.obtenerPorId(id);
+        Optional<Prenda> prendaPorId = prendaService.obtenerPorId(id);
         
         if(prendaPorId.isPresent()){
             ResponseEntity.ok(prendaPorId);
@@ -51,7 +56,7 @@ public class PrendaController {
 
     @GetMapping("/{tipo}")
     public ResponseEntity<List<Prenda>> obtenerPorTipo(@RequestParam String tipo) {
-        List<Prenda> prendaTipo= service.buscarPorTipo(tipo);
+        List<Prenda> prendaTipo= prendaService.buscarPorTipo(tipo);
 
         if (prendaTipo.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -63,8 +68,8 @@ public class PrendaController {
     
     
     @PostMapping
-    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda) {
-        
+    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda, @RequestBody MultipartFile file) {
+        ImageResponseDTO image = 
         return ResponseEntity.status(202).body(service.crear(prenda));
     }
     
@@ -72,6 +77,7 @@ public class PrendaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editarPrenda(@PathVariable Long id, @RequestBody PrendaRequest prenda) {
         boolean prendaEditar= service.editarPrenda(id, prenda);
+        
         if(!prendaEditar){
             return ResponseEntity.notFound().build();
         }

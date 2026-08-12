@@ -19,7 +19,7 @@ public class Prenda {
 
     @Field(type = FieldType.Text, analyzer = "spanish")
     private String nombre;
-
+ 
     @Field(type = FieldType.Keyword)
     private String tipo;
 

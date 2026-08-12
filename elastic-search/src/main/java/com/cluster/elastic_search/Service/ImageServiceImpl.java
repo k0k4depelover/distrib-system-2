@@ -35,18 +35,20 @@ public class ImageServiceImpl implements ImageService{
     @Transactional
     public ImageResponseDTO subirImagen(MultipartFile file, Long idUsuario) {
         validarArchivo(file);
-        String filename = generarNombreUnico(file); 
+        // Pendiente: Añadir verificacion de nombre
+        String nombreOriginal = file.getOriginalFilename();
+        String nombreImagen = generarNombreUnico(file); 
 
         try {
-            String imageUrl = storage.guardarImagen(file, filename); 
-            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), imageUrl, filename, idUsuario);
+            String imageUrl = storage.guardarImagen(file, nombreImagen); 
+            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), imageUrl, nombreImagen, nombreOriginal, idUsuario);
             repository.save(entidad); 
             
             return ImageResponseDTO.desde(entidad);
         } catch (Exception e) {
 
             try {
-                storage.eliminar(filename); 
+                storage.eliminar(nombreImagen); 
             } catch (Exception ignored) {
 
             }
@@ -56,7 +58,7 @@ public class ImageServiceImpl implements ImageService{
 
     }
 
-    
+
     @Override
     public Boolean eliminarImagen(Long id, Long idUsuario) {
         Optional<ImagenMD> imagenDelete = repository.findByIdAndOwnerId(id, idUsuario);
@@ -73,7 +75,7 @@ public class ImageServiceImpl implements ImageService{
     public List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario) {
         List<ImagenMD> listImages = repository.findByOwnerId(idUsuario);
         return listImages.stream().map(
-            image -> new ImageResponseDTO(image.getFechaSubida(), image.getNombreImagen())
+            image -> new ImageResponseDTO(image.getFechaSubida(), image.getNombreOriginal(), image.getImageUrl())
         ).collect(Collectors.toList());
     }
 
