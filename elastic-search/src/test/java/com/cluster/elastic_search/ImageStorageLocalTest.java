@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.cluster.elastic_search.Service.ImageStorage;
-import com.cluster.elastic_search.Service.ImageStorageLocal;
+import com.cluster.elastic_search.Service.ImageStorageLocalImpl;
 
 public class ImageStorageLocalTest {
     
@@ -13,7 +13,7 @@ public class ImageStorageLocalTest {
 
     @BeforeEach
     void setup(){
-        this.storage = new ImageStorageLocal();
+        this.storage = new ImageStorageLocalImpl();
     }
 
     @Test

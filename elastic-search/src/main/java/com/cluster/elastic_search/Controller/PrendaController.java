@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cluster.elastic_search.Document.Prenda;
 import com.cluster.elastic_search.Dto.PrendaRequest;
-import com.cluster.elastic_search.Service.PrendaService;
+import com.cluster.elastic_search.Service.PrendaServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/prendas")
 public class PrendaController {
-    private final PrendaService service;
+    private final PrendaServiceImpl service;
 
-    public PrendaController(PrendaService service) {
+    public PrendaController(PrendaServiceImpl service) {
         this.service = service;
     }
     
@@ -38,7 +38,7 @@ public class PrendaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Prenda> obtenerPorId(@RequestParam String id) {
+    public ResponseEntity<Prenda> obtenerPorId(@RequestParam Long id) {
         Optional<Prenda> prendaPorId = service.obtenerPorId(id);
         
         if(prendaPorId.isPresent()){
@@ -70,7 +70,7 @@ public class PrendaController {
     
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> editarPrenda(@PathVariable String id, @RequestBody PrendaRequest prenda) {
+    public ResponseEntity<?> editarPrenda(@PathVariable Long id, @RequestBody PrendaRequest prenda) {
         boolean prendaEditar= service.editarPrenda(id, prenda);
         if(!prendaEditar){
             return ResponseEntity.notFound().build();
@@ -81,7 +81,7 @@ public class PrendaController {
      
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarPrenda(@PathVariable String id){
+    public ResponseEntity<?> eliminarPrenda(@PathVariable Long id){
         Boolean prendaELiminar = service.eliminar(id);
         if(!prendaELiminar){
             return ResponseEntity.notFound().build();

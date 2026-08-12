@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cluster.elastic_search.Config.Exceptions.AlmacenamientoException;
 
 @Service
-public class ImageStorageLocal implements ImageStorage {
+public class ImageStorageLocalImpl implements ImageStorage {
 
     @Value("${app.image.storage-path}")
     private String storagePath;

@@ -19,7 +19,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 
 
 @Service
-public class PrendaService implements IPrendaService{
+public class PrendaServiceImpl implements PrendaService{
 
     public PrendaRepository repository;
     public ElasticsearchOperations elasticsearchOperations;
@@ -30,7 +30,7 @@ public class PrendaService implements IPrendaService{
     @Value("${app.images.base-url}")
     public String baseUrl;
 
-    public PrendaService(PrendaRepository repository, ElasticsearchOperations elasticsearchOperations){
+    public PrendaServiceImpl(PrendaRepository repository, ElasticsearchOperations elasticsearchOperations){
         this.repository= repository;
         this.elasticsearchOperations = elasticsearchOperations;
     }
