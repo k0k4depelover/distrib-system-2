@@ -1,8 +1,10 @@
 package com.cluster.elastic_search.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
@@ -11,16 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cluster.elastic_search.Dto.ImageResponseDTO;
 import com.cluster.elastic_search.Model.ImagenMD;
 import com.cluster.elastic_search.Repository.ImageRepository;
-import com.cluster.elastic_search.Service.Helpers.helperFuncions;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class ImageServiceImpl implements ImageService{
-        private final helperFuncions helper;
         private final ImageStorage storage;
         private final ImageService service;
         private final ImageRepository repository;
@@ -37,11 +36,11 @@ public class ImageServiceImpl implements ImageService{
     @Transactional
     public ImageResponseDTO subirImagen(MultipartFile file, Long idUsuario) {
         
-        String filename = helper.generarNombreUnico(file);
-        String url = storage.guardarImagen(file, filename);
+        String filename = generarNombreUnico(file);
+        String imageUrl = storage.guardarImagen(file, filename);
 
         try{
-            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), filename, url, idUsuario);
+            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), imageUrl, filename ,idUsuario);
             repository.save(entidad);
             return ImageResponseDTO.desde(entidad);
         }
@@ -52,15 +51,44 @@ public class ImageServiceImpl implements ImageService{
 
     }
     @Override
-    public void eliminarImagen(Long id, Long idUsuario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminarImagen'");
+    public Boolean eliminarImagen(Long id, Long idUsuario) {
+        Optional<ImagenMD> imagenDelete = repository.findByIdAndOwnerId(id, idUsuario);
+        if(imagenDelete.isPresent()){
+            storage.eliminar(imagenDelete.get().getNombreImagen());
+            repository.delete(imagenDelete.get());
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
-    public List<ImageResponseDTO> buscarImagenUsuario(Long idUsuario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarImagenUsuario'");
+    public List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario) {
+        List<ImagenMD> listImages = repository.findByOwnerId(idUsuario);
+        return listImages.stream().map(
+            image -> new ImageResponseDTO(image.getFechaSubida(), image.getNombreImagen())
+        ).collect(Collectors.toList());
+    }
+
+
+
+    /*
+        Genera un UUID y lo castea a String.
+        Obtiene el nombre original del archivo, despues obtiene el ultimo 
+        punto existente en el nombre del archivo para obtener la extension del archivo.
+    */
+    public String generarNombreUnico(MultipartFile file){
+        String originalName=  file.getOriginalFilename();
+        String extension ="";
+        if (originalName!= null && originalName.contains(".")){
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+        return UUID.randomUUID().toString() + extension;
     }
     
+
+    public void validarArchivo(MultipartFile file){
+        
+    }
+
 }

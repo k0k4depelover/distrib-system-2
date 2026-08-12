@@ -8,6 +8,6 @@ import com.cluster.elastic_search.Dto.ImageResponseDTO;
 
 public interface ImageService {
     ImageResponseDTO subirImagen(MultipartFile file, Long idUsuario);
-    void eliminarImagen(Long id, Long idUsuario);
-    List<ImageResponseDTO> buscarImagenUsuario(Long idUsuario);
+    Boolean eliminarImagen(Long id, Long idUsuario);
+    List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario);
 }
