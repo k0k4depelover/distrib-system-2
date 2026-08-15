@@ -1,81 +1,29 @@
-**Que estaba haciendo la ultima vez?**
+## Arquitectura del Sistema
 
-*LEER ESTA NOTA PARA LA SIGUIENTE SESION DE CODIGO*
+![Flujo de Subida de Imágenes y Prendas](docs/diagrama-arquitectura.png)
 
-# Estrategia de Subida de Imágenes y Creación de Prendas
+### Explicación del Flujo
 
-## Contexto y Objetivo
-El frontend requiere subir una imagen primero, obtener su URL generada y pre-llenar de forma inmutable el formulario de la prenda antes de guardarla. Se requiere manejar las **imágenes huérfanas** (imágenes subidas donde el usuario abandona el formulario sin guardar la prenda).
+1. **Subida de Imagen Temporal:**
+   - El cliente envía la imagen vía `POST /api/imagenes/upload`.
+   - El **Backend** guarda el archivo en **Bucket Storage** y registra la metadata en la base de datos **Image DB** con el estado `confirmed = FALSE`.
+   - Retorna la `imageUrl` e `idImage` al frontend para renderizar la vista previa.
 
----
+2. **Creación de la Prenda & Indexación:**
+   - Al confirmar el formulario, el cliente envía `POST /api/prendas`.
+   - El **Backend** actualiza el estado de la imagen en **Image DB** a `confirmed = TRUE`.
+   - Guarda la entidad en la base de datos relacional (**Prenda DB**) e **indexa el documento en Elasticsearch** para búsquedas de texto completo (búsqueda por nombre, tipo y descripción).
 
-## Arquitectura de 2 Endpoints con Staging / Limpieza
-
-### Flujo Técnico
-
-1. **Endpoint 1 — Subida Temporal de Imagen (`POST /api/imagenes/upload`)**
-   - Recibe el archivo `MultipartFile`.
-   - Guarda el archivo físico en el storage local/S3.
-   - Crea un registro en `ImagenMD` con `confirmado = false` (o `id_prenda = null`).
-   - Retorna un `ImageResponseDTO` con la `imageUrl` y el `id` generado.
-
-2. **Endpoint 2 — Creación de Prenda (`POST /api/prendas`)**
-   - Recibe la entidad/DTO de `Prenda` incluyendo el `id_imagen` o `imageUrl`.
-   - Modifica el estado de `ImagenMD` a `confirmado = true`.
-   - Guarda/Indexa el documento `Prenda` en Elasticsearch (`prendas`).
-
-3. **Tarea Programada — Limpieza de Imágenes Huérfanas (`@Scheduled`)**
-   - Tarea en segundo plano (ej. ejecuta cada medianoche o cada X horas).
-   - Busca registros `ImagenMD` con `confirmado == false` y `fechaSubida` anterior a 24 horas.
-   - Elimina los archivos físicos correspondientes del sistema de archivos.
-   - Borra los registros huérfanos de la base de datos MySQL/PostgreSQL.
+3. **Mantenimiento (Cron Job):**
+   - Un proceso `@Scheduled` se ejecuta cada 12 horas.
+   - Elimina del **Bucket Storage** y de la **Image DB** las imágenes no confirmadas (`confirmed = FALSE`) con antigüedad mayor al tiempo de gracia establecido.
 
 ---
 
-## Ajustes Importantes Pendientes en Código Java
+### 🔮 Trabajo Futuro y Optimizaciones Planeadas
 
-1. **Corregir anotación `@Id` en `ImagenMD`:**
-   - Cambiar de `org.springframework.data.annotation.Id` a `jakarta.persistence.Id`.
-   - Añadir `@GeneratedValue(strategy = GenerationType.IDENTITY)`.
-
-2. **Añadir campo de confirmación en `ImagenMD`:**
-   ```java
-   @Column(name = "confirmado")
-   private Boolean confirmado = false;
-   ```
-
-3. **Corrección de ruta en `FileStorageService.guardarImagen`:**
-   - Cambiar la asignación de `destino` para incluir el nombre del archivo:
-     ```java
-     Path destino = base.resolve(filename).normalize();
-     ```
-
-4. **Crear el Job de Limpieza (`ImageCleanupTask`):**
-   ```java
-   @Scheduled(cron = "0 0 0 * * ?")
-   @Transactional
-   public void limpiarHuerfanas() {
-       LocalDateTime limite = LocalDateTime.now().minusHours(24);
-       List<ImagenMD> huerfanas = repository.findByConfirmadoFalseAndFechaSubidaBefore(limite);
-       for (ImagenMD img : huerfanas) {
-           storage.eliminar(img.getNombreImagen());
-           repository.delete(img);
-       }
-   }
-   ```
-
-
-
-
-## Notas Extra :
-
-*Dado que no se habia considerado previamente la posibilidad de subir imagenes al sitio no se habia agregado una base de datos con propiedades ACID, por lo que el repositorio de Elastic Search tendra 2 bases de datos y un bucket de datos La logica es la siguiente:*
-
-* Una Base de datos Indexada para busqueda de texto -> Elastic
-* Una Base de datos que soporte subir, actualizar datos garantizando la Integridad Relacional y las propiedades ACID -> MySQL
-* Bucket donde se almacenan streams de bytes.
-
-
-
-Model -> Referencia a un objeto de Base de Datos relacional.
-Document -> Referencia a un objeto de Base de Datos no relacional.
+* **Inferencia Automática del Campo `tipo` mediante gRPC y Red Neuronal:**
+  - **Eliminación del campo `tipo` en el formulario:** El usuario ya no seleccionará manualmente el tipo de prenda al crearla.
+  - **Inferencia diferida (Post-confirmación):** Para evitar ataques de denegación de servicio (DoS) por consumo de ancho de banda o costo computacional excesivo con imágenes huérfanas, la llamada a la red neuronal **solo se ejecutará cuando el usuario presione "Confirmar"** (`POST /api/prendas`).
+  - **Integración gRPC:** La comunicación entre el Backend en Spring Boot y el microservicio de Deep Learning / Visión por Computadora se realizará mediante gRPC para maximizar el rendimiento.
+  - **Edición manual y Feedback Loop:** El usuario podrá editar manualmente el `tipo` inferido en caso de error. Estas correcciones manuales se registrarán para retroalimentar y reentrenar posteriormente el modelo de la red neuronal.
