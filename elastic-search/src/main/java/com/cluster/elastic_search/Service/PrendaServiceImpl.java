@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 
 import com.cluster.elastic_search.Document.Prenda;
 import com.cluster.elastic_search.Dto.PrendaRequest;
+import com.cluster.elastic_search.Model.ImagenMD;
 import com.cluster.elastic_search.Repository.PrendaRepository;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
@@ -29,22 +30,29 @@ public class PrendaServiceImpl implements PrendaService{
 
     @Value("${app.images.base-url}")
     public String baseUrl;
+    // Inyeccion de dependencias de ImageService, para corroborar la existencia de imagenes.
 
-    public PrendaServiceImpl(PrendaRepository repository, ElasticsearchOperations elasticsearchOperations){
+    private final ImageService imageService;
+
+    public PrendaServiceImpl(PrendaRepository repository, ElasticsearchOperations elasticsearchOperations, ImageService imageService){
+        this.imageService = imageService;
         this.repository= repository;
         this.elasticsearchOperations = elasticsearchOperations;
     }
 
     @Override
-    public Prenda crear(PrendaRequest prenda) {
+    public Prenda crear(PrendaRequest prenda, Long usuarioId) {
+
+        Optional<ImagenMD> imageConfirm = imageService.confirmarYExtraer(prenda.getIdImage(), usuarioId);
+
         Prenda prendaCrear = new Prenda();
 
         prendaCrear.setId(prenda.getId());
         prendaCrear.setNombre(prenda.getNombre());
         prendaCrear.setPrecio(prenda.getPrecio());
         prendaCrear.setDescripcion(prenda.getDescripcion());
-        prendaCrear.setImageUrl(prenda.getImageUrl());
-
+        prendaCrear.setImageUrl(imageConfirm.get().getImageUrl());
+        
         return repository.save(prendaCrear);
 
 

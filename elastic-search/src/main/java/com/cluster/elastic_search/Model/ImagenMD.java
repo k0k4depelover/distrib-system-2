@@ -10,14 +10,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "images")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor 
 public class ImagenMD {
 
     @Id
@@ -42,12 +41,17 @@ public class ImagenMD {
     @Column(name = "id_usuario")
     private Long idUsuario;
 
-    public ImagenMD(LocalDateTime fechaSubida, String imageUrl, String nombreImagen, String nombreOriginal, Long idUsuario) {
+    @Column(name = "confirmed")
+    private Boolean confirmed;
+
+    public ImagenMD(LocalDateTime fechaSubida, String imageUrl, 
+        String nombreImagen, String nombreOriginal, Long idUsuario, Boolean confirmed ) {
         this.fechaSubida = fechaSubida;
         this.imageUrl = imageUrl;
         this.nombreImagen = nombreImagen;
         this.nombreOriginal= nombreOriginal;
         this.idUsuario = idUsuario;
+        this.confirmed= confirmed;
     }
 
     

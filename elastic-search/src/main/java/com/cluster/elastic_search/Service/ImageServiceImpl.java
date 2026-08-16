@@ -29,7 +29,14 @@ public class ImageServiceImpl implements ImageService{
         );
         private static final long MAX_SIZE = (5* 1024 * 1024); 
         private static final Tika TIKA = new Tika();
-    
+        
+
+
+
+    public ImageServiceImpl(ImageStorage storage, ImageService imageService, ImageRepository repository) {
+        this.storage = storage;
+        this.repository = repository;
+    }
 
     @Override
     @Transactional
@@ -38,10 +45,9 @@ public class ImageServiceImpl implements ImageService{
         // Pendiente: Añadir verificacion de nombre
         String nombreOriginal = file.getOriginalFilename();
         String nombreImagen = generarNombreUnico(file); 
-
         try {
             String imageUrl = storage.guardarImagen(file, nombreImagen); 
-            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), imageUrl, nombreImagen, nombreOriginal, idUsuario);
+            ImagenMD entidad = new ImagenMD(LocalDateTime.now(), imageUrl, nombreImagen, nombreOriginal, idUsuario,false);
             repository.save(entidad); 
             
             return ImageResponseDTO.desde(entidad);
@@ -75,7 +81,7 @@ public class ImageServiceImpl implements ImageService{
     public List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario) {
         List<ImagenMD> listImages = repository.findByOwnerId(idUsuario);
         return listImages.stream().map(
-            image -> new ImageResponseDTO(image.getFechaSubida(), image.getNombreOriginal(), image.getImageUrl())
+            image -> new ImageResponseDTO(image.getId(), image.getFechaSubida(), image.getNombreOriginal(), image.getImageUrl(), image.getConfirmed())
         ).collect(Collectors.toList());
     }
 
@@ -119,6 +125,24 @@ public class ImageServiceImpl implements ImageService{
         catch(IOException e){
             throw new ArchivoInvalidoExcepcion("No se pudo leer el archivo");
         }
+    }
+
+    
+    // Utiliza el metodo atomico previamente definido para actualizar de forma segura el 
+    // estado de una foto, si ya se encuentra actualizada maneja un error, de lo contrario 
+    // simplemente confirma el cambio en la base de datos.
+    // Dado que el update regresa la cantidad de filas afectadas, y solo puede fluctuar entre
+    // 0 y 1 nos agarramos de eso para poder manejar errores o aciertos.
+    @Override
+    public Optional<ImagenMD> confirmarYExtraer(Long id, Long idUsuario) {
+        
+        int estadoActualizacion = repository.confirmarImagenYExtraerImagen(id, idUsuario);
+        
+        if(estadoActualizacion == 0) {
+            throw new IllegalStateException("No se pudo confirmar la imagen: el recurso no existe, no pertenece al usuario o ya fue confirmada su subida.")
+        }
+
+        return repository.findById(id);
     }
 
 }

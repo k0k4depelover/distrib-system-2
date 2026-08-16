@@ -8,17 +8,17 @@ import lombok.*;
 public class PrendaRequest {
     private Long id;
 
-    private String nombreImagen;
+    private String nombre;
 
     private String tipo;
 
     private String descripcion;
 
-    private String imageUrl;
-
     private Double precio;
 
-    private String nombre;
+    private Long idImage; // Cambio principal, por request se manda el Id de la foto, que la gestiona el cliente Frontend
+
+
 
 }
 
