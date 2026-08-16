@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,14 +63,16 @@ public class PrendaController {
     
     
     @PostMapping
-    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(prendaService.crear(prenda));
+    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda, Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        return ResponseEntity.status(HttpStatus.CREATED).body(prendaService.crear(prenda, usuarioId));
     }
     
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> editarPrenda(@PathVariable Long id, @RequestBody PrendaRequest prenda) {
-        boolean prendaEditar= prendaService.editarPrenda(id, prenda);
+    public ResponseEntity<?> editarPrenda(@PathVariable Long id, @RequestBody PrendaRequest prenda, Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        boolean prendaEditar= prendaService.editarPrenda(id, usuarioId, prenda);
         
         if(!prendaEditar){
             return ResponseEntity.notFound().build();
@@ -80,8 +83,9 @@ public class PrendaController {
      
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarPrenda(@PathVariable Long id){
-        Boolean prendaELiminar = prendaService.eliminar(id);
+    public ResponseEntity<?> eliminarPrenda(@PathVariable Long id, Authentication authentication){
+        Long usuarioId = (Long) authentication.getPrincipal();
+        Boolean prendaELiminar = prendaService.eliminar(id, usuarioId);
         if(!prendaELiminar){
             return ResponseEntity.notFound().build();
         }
