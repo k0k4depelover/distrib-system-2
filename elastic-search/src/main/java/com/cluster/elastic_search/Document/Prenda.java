@@ -31,4 +31,7 @@ public class Prenda {
 
     @Field(type = FieldType.Text)
     private String imageUrl;
+
+    @Field(type = FieldType.Long)
+    private Long usuarioId;
 }

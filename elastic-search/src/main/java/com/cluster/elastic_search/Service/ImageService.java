@@ -1,7 +1,7 @@
 package com.cluster.elastic_search.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,5 +12,5 @@ public interface ImageService {
     ImageResponseDTO subirImagen(MultipartFile file, Long idUsuario);
     Boolean eliminarImagen(Long id, Long idUsuario);
     List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario);
-    Optional<ImagenMD> confirmarYExtraer (Long id, Long idUsuario);
+    ImagenMD confirmarYExtraer (Long id, Long idUsuario);
 }

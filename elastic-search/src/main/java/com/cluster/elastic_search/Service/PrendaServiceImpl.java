@@ -43,7 +43,7 @@ public class PrendaServiceImpl implements PrendaService{
     @Override
     public Prenda crear(PrendaRequest prenda, Long usuarioId) {
 
-        Optional<ImagenMD> imageConfirm = imageService.confirmarYExtraer(prenda.getIdImage(), usuarioId);
+        ImagenMD imageConfirm = imageService.confirmarYExtraer(prenda.getIdImage(), usuarioId);
 
         Prenda prendaCrear = new Prenda();
 
@@ -51,8 +51,8 @@ public class PrendaServiceImpl implements PrendaService{
         prendaCrear.setNombre(prenda.getNombre());
         prendaCrear.setPrecio(prenda.getPrecio());
         prendaCrear.setDescripcion(prenda.getDescripcion());
-        prendaCrear.setImageUrl(imageConfirm.get().getImageUrl());
-        
+        prendaCrear.setImageUrl(imageConfirm.getImageUrl());
+        prendaCrear.setUsuarioId(usuarioId);
         return repository.save(prendaCrear);
 
 
@@ -64,19 +64,27 @@ public class PrendaServiceImpl implements PrendaService{
     }
 
     @Override
-    public Boolean editarPrenda(Long id, PrendaRequest prenda) {
-        Optional<Prenda> optionalPrenda = repository.findById(id);
+        public Boolean editarPrenda(Long id, Long usuarioId, PrendaRequest prendaDto) {
+            Optional<Prenda> optionalPrenda = repository.findByIdAndUsuarioId(id, usuarioId);
 
-        if(optionalPrenda.isEmpty()){
-            return false;
+            if (optionalPrenda.isEmpty()) {
+                return false; 
+            }
+
+            Prenda prendaExistente = optionalPrenda.get();
+            prendaExistente.setNombre(prendaDto.getNombre());
+            prendaExistente.setPrecio(prendaDto.getPrecio());
+            prendaExistente.setDescripcion(prendaDto.getDescripcion());
+            prendaExistente.setTipo(prendaDto.getTipo());
+
+            if (prendaDto.getIdImage() != null) {
+                ImagenMD nuevaImagen = imageService.confirmarYExtraer(prendaDto.getIdImage(), usuarioId);
+                prendaExistente.setImageUrl(nuevaImagen.getImageUrl());
+            }
+
+            repository.save(prendaExistente);
+            return true;
         }
-
-        optionalPrenda.get().setNombre(prenda.getNombre());
-        optionalPrenda.get().setPrecio(prenda.getPrecio());
-        optionalPrenda.get().setDescripcion(prenda.getDescripcion());
-        optionalPrenda.get().setImageUrl(prenda.getImageUrl()); 
-        return true;
-    }
 
     @Override
     public List<Prenda> obtenerTodas() {
@@ -106,16 +114,18 @@ public class PrendaServiceImpl implements PrendaService{
     }
 
     @Override
-    public Boolean eliminar(Long id) {
-        Optional<Prenda> prendaEliminar = repository.findById(id);
-        if(prendaEliminar.isPresent()){
+        public Boolean eliminar(Long id, Long usuarioId) {
+            // 1. Verificar existencia y pertenencia antes de borrar
+            Optional<Prenda> prendaEliminar = repository.findByIdAndUsuarioId(id, usuarioId);
+
+            if (prendaEliminar.isEmpty()) {
+                return false;
+            }
+
+            // 2. Eliminar del índice
             repository.deleteById(id);
             return true;
         }
-
-        return false;
-        
-    }
 
 
     

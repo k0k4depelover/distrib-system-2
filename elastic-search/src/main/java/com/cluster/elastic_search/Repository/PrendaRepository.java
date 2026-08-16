@@ -1,6 +1,7 @@
 package com.cluster.elastic_search.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -13,4 +14,6 @@ public interface PrendaRepository extends CrudRepository<Prenda, Long>{
      List<Prenda> findByTipo(String tipo);
 
      Prenda save(PrendaRequest prenda);
+
+     Optional<Prenda> findByIdAndUsuarioId(Long id, Long usuarioId);
 }

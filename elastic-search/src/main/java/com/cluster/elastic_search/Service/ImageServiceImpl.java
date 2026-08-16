@@ -79,7 +79,7 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario) {
-        List<ImagenMD> listImages = repository.findByOwnerId(idUsuario);
+        List<ImagenMD> listImages = repository.findAllByOwnerId(idUsuario);
         return listImages.stream().map(
             image -> new ImageResponseDTO(image.getId(), image.getFechaSubida(), image.getNombreOriginal(), image.getImageUrl(), image.getConfirmed())
         ).collect(Collectors.toList());
@@ -134,15 +134,15 @@ public class ImageServiceImpl implements ImageService{
     // Dado que el update regresa la cantidad de filas afectadas, y solo puede fluctuar entre
     // 0 y 1 nos agarramos de eso para poder manejar errores o aciertos.
     @Override
-    public Optional<ImagenMD> confirmarYExtraer(Long id, Long idUsuario) {
+    public ImagenMD confirmarYExtraer(Long id, Long idUsuario) {
         
         int estadoActualizacion = repository.confirmarImagenYExtraerImagen(id, idUsuario);
         
         if(estadoActualizacion == 0) {
-            throw new IllegalStateException("No se pudo confirmar la imagen: el recurso no existe, no pertenece al usuario o ya fue confirmada su subida.")
+            throw new IllegalStateException("No se pudo confirmar la imagen: el recurso no existe, no pertenece al usuario o ya fue confirmada su subida.");
         }
 
-        return repository.findById(id);
+        return repository.findById(id).get();
     }
 
 }

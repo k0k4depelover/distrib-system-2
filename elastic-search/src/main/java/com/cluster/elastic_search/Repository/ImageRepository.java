@@ -12,7 +12,7 @@ import com.cluster.elastic_search.Model.ImagenMD;
 import jakarta.transaction.Transactional;
 
 public interface ImageRepository extends JpaRepository<ImagenMD, Long>{
-    public List<ImagenMD> findByOwnerId(Long ownerId);
+    public Optional<ImagenMD> findByOwnerId(Long ownerId);
     
     @Query("""
             SELECT c
@@ -31,4 +31,13 @@ public interface ImageRepository extends JpaRepository<ImagenMD, Long>{
         WHERE i.id = ?1 AND i.idUsuario = ?2 AND  i.confirmed=false;        
         """)
     int confirmarImagenYExtraerImagen(Long idImagen, Long idUsuario);
+    
+    @Query("""
+            SELECT c
+            FROM ImagenMD
+            WHERE idUsuario = ?2
+            """)
+    public  List<ImagenMD> findAllByOwnerId(Long ownerId); 
+
+
 }
