@@ -1,5 +1,6 @@
 package com.cluster.elastic_search.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,18 @@ public interface ImageRepository extends JpaRepository<ImagenMD, Long>{
             SELECT c
             FROM ImagenMD
             WHERE idUsuario = ?2
+            
             """)
-    public  List<ImagenMD> findAllByOwnerId(Long ownerId); 
+    public  List<ImagenMD> findAllByOwnerId(Long ownerId);
+
+    @Query("""
+            SELECT * 
+            FROM ImagenMD
+                WHERE confirmed=FALSE
+                AND fechaSubida < ?1
+            
+            """)
+    public List<ImagenMD> findByConfirmedFalseAndfechaSubidaBefore(LocalDateTime limit); 
 
 
 }

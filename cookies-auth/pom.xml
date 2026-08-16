@@ -97,12 +97,6 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-        <!-- Spring AI PostgresML Embedding -->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-model-postgresml-embedding</artifactId>
-        </dependency>
-
         <!-- Devtools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
