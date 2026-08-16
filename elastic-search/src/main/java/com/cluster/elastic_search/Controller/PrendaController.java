@@ -2,18 +2,13 @@ package com.cluster.elastic_search.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.cluster.elastic_search.Document.Prenda;
-import com.cluster.elastic_search.Dto.ImageResponseDTO;
 import com.cluster.elastic_search.Dto.PrendaRequest;
-import com.cluster.elastic_search.Service.ImageService;
 import com.cluster.elastic_search.Service.PrendaService;
-import com.cluster.elastic_search.Service.PrendaServiceImpl;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,30 +26,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/prendas")
 public class PrendaController {
     private final PrendaService prendaService;
-    private final ImageService imageService;
-    public PrendaController(PrendaService prendaService, ImageService imageService) {
+    public PrendaController(PrendaService prendaService) {
         this.prendaService = prendaService;
-        this.imageService = imageService;
     }
     
     @GetMapping
-    public List<Prenda> obtenerTodos() {
-        return prendaService.obtenerTodas();
+    public ResponseEntity<List<Prenda>> obtenerTodos() {
+        List<Prenda> listaPrendas = prendaService.obtenerTodas();
+        return ResponseEntity.ok(listaPrendas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Prenda> obtenerPorId(@RequestParam Long id) {
+    public ResponseEntity<Prenda> obtenerPorId(@PathVariable Long id) {
         Optional<Prenda> prendaPorId = prendaService.obtenerPorId(id);
         
         if(prendaPorId.isPresent()){
-            ResponseEntity.ok(prendaPorId);
+            return ResponseEntity.ok().body(prendaPorId.get());
         }
 
         return ResponseEntity.notFound().build();
 
     }
 
-    @GetMapping("/{tipo}")
+    @GetMapping("/tipo/{tipo}")
     public ResponseEntity<List<Prenda>> obtenerPorTipo(@RequestParam String tipo) {
         List<Prenda> prendaTipo= prendaService.buscarPorTipo(tipo);
 
@@ -68,15 +62,14 @@ public class PrendaController {
     
     
     @PostMapping
-    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda, @RequestBody MultipartFile file) {
-        ImageResponseDTO image = 
-        return ResponseEntity.status(202).body(service.crear(prenda));
+    public ResponseEntity<Prenda> crearPrenda(@RequestBody PrendaRequest prenda) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(prendaService.crear(prenda));
     }
     
     
     @PutMapping("/{id}")
     public ResponseEntity<?> editarPrenda(@PathVariable Long id, @RequestBody PrendaRequest prenda) {
-        boolean prendaEditar= service.editarPrenda(id, prenda);
+        boolean prendaEditar= prendaService.editarPrenda(id, prenda);
         
         if(!prendaEditar){
             return ResponseEntity.notFound().build();
@@ -88,7 +81,7 @@ public class PrendaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarPrenda(@PathVariable Long id){
-        Boolean prendaELiminar = service.eliminar(id);
+        Boolean prendaELiminar = prendaService.eliminar(id);
         if(!prendaELiminar){
             return ResponseEntity.notFound().build();
         }
@@ -98,7 +91,7 @@ public class PrendaController {
 
     @GetMapping("/buscar")
     public ResponseEntity<List<Prenda>> busquedaElastic(@RequestParam String q) {
-        return ResponseEntity.ok(service.busquedaElastic(q));
+        return ResponseEntity.ok(prendaService.busquedaElastic(q));
     }
     
     

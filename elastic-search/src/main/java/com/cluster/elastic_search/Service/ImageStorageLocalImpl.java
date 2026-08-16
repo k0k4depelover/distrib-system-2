@@ -29,7 +29,7 @@ public class ImageStorageLocalImpl implements ImageStorage {
     public String guardarImagen(MultipartFile file, String filename) {
         try{
             Path base = Paths.get(storagePath).toAbsolutePath().normalize();
-            Path destino = base.normalize();
+            Path destino = base.resolve(filename).normalize();
 
             if(!destino.startsWith(base)){
                 throw new AlmacenamientoException("Ruta de archivo invalido", null);

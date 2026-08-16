@@ -43,7 +43,7 @@ public class UserContextFilter extends OncePerRequestFilter{
                     : List.of();
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userId, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(auth); // Guarda el objeto Authentication en el hilo actual de peticion
             }
             catch (NumberFormatException e){
 

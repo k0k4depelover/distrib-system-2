@@ -1,4 +1,4 @@
-## Arquitectura del Sistema
+## Arquitectura del Sistema:
 
 ![Flujo de Subida de Imágenes y Prendas](docs/diagrama-arquitectura.png)
 

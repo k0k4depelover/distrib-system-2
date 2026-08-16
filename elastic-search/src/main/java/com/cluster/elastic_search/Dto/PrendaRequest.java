@@ -18,7 +18,7 @@ public class PrendaRequest {
 
     private Double precio;
 
-
+    private String nombre;
 
 }
 

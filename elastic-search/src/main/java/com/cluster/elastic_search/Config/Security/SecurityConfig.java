@@ -15,6 +15,7 @@ public class SecurityConfig {
             .addFilterBefore(UserContextFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth ->
                 auth.requestMatchers("/api/imagenes/**").authenticated()
+                
                 .anyRequest().permitAll()
             );
         return http.build();
