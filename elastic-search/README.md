@@ -18,6 +18,8 @@
    - Un proceso `@Scheduled` se ejecuta cada 12 horas.
    - Elimina del **Bucket Storage** y de la **Image DB** las imágenes no confirmadas (`confirmed = FALSE`) con antigüedad mayor al tiempo de gracia establecido.
 
+   **FLUJO CREADO EXITOSAMENTE**
+
 ---
 
 ### 🔮 Trabajo Futuro y Optimizaciones Planeadas
