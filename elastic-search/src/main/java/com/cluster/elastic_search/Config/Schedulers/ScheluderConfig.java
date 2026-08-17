@@ -1,4 +1,4 @@
-package com.cluster.elastic_search.Config;
+package com.cluster.elastic_search.Config.Schedulers;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
