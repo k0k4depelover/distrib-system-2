@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cluster.elastic_search.Document.Prenda;
 import com.cluster.elastic_search.Dto.PrendaRequest;
 import com.cluster.elastic_search.Service.PrendaService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;

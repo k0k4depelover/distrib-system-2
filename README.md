@@ -28,3 +28,6 @@ Para brindar servicios de prediccion de prendas, ademas tiene pendiente la imple
 **¿Que se esta trabajando?**
 
 Revisar el servicio Elastic, existe un README.md con los pasos a seguir en la siguiente sesion.
+
+Arquitectura:
+![Flujo de Subida de Imágenes y Prendas](Arquitectura.png)

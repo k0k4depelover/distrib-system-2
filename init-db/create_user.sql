@@ -23,4 +23,4 @@ CREATE TABLE IF NOT EXISTS users_roles(
 );
 
 
-INSERT INTO roles(name) VALUES('ADMIN'), ('USER'), ('MOD');
+INSERT INTO roles(name) VALUES('ROLE_ADMIN'), ('ROLE_USER'), ('ROLE_MOD');
