@@ -10,10 +10,8 @@ services:
     container_name: eureka-server-grpc-server-minimum
     networks:
       - private-net
-      - public-net
     build: ./eureka-server
-    ports:
-      - "8761:8761"
+
 
   api-gateway:
     container_name: api-gateway-minimum

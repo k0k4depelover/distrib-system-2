@@ -27,12 +27,22 @@ spring:
             - id: chat
               uri: lb://CHAT
               predicates:
-              - Path=/chat/**
-              filters:
-              - name:               
+                - Path=/chat/**
 
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: http://eureka-server-grcp-server:8761/eureka
-      fetch-register: true
+      defaultZone: http://eureka-admin:${EUREKA_PASSWORD}@eureka-server-grpc-server:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true

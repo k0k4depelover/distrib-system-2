@@ -8,8 +8,10 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 public class RedisRateLimiterConfig {
-    @Bean
-    public KeyResolver userAddressResolver(){
-        return exchange -> Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
-    }
+@Bean
+public KeyResolver userAddressResolver() {
+    return exchange -> Mono.just(
+        exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
+    );
+}
 }

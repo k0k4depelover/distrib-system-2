@@ -25,12 +25,15 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server-grcp-server:8761/eureka
+      defaultZone: http://eureka-admin:${EUREKA_PASSWORD}@eureka-server-grpc-server:8761/eureka
 
 management:
   endpoints:
     web:
       base-path: /actuator
       exposure:
-        include:
-        - health,info
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
