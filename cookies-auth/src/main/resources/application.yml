@@ -26,3 +26,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka-server-grcp-server:8761/eureka
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include:
+        - health,info
