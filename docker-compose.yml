@@ -12,6 +12,16 @@ services:
       - private-net
     build: ./eureka-server
 
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fs http://localhost:8761/actuator/health || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
 
   api-gateway:
     container_name: api-gateway-minimum
@@ -21,10 +31,14 @@ services:
     build: ./api-gateway
     ports:
       - "7000:7000"
+
     depends_on:
-      - eureka-server-grpc-server
+      eureka-server-grpc-server:
+        condition: service_healthy
+
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
+
 
   session-stateful-server:
     container_name: session-stateful-server-minimum
@@ -33,10 +47,28 @@ services:
     build: ./cookies-auth
     expose:
       - "7001"
+
     depends_on:
-      - eureka-server-grpc-server
+      eureka-server-grpc-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fs http://localhost:7001/actuator/health || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+
+
 
   web-socket-chat:
     container_name: web-socket-chat-minimum
@@ -46,10 +78,14 @@ services:
     build: ./chat
     ports:
       - "7002:7002"
+
     depends_on:
-      - eureka-server-grpc-server
+      eureka-server-grpc-server:
+        condition: service_healthy
+
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
+
 
   elastic-search-server:
     container_name: elastic-server
@@ -58,10 +94,27 @@ services:
     build: ./elastic-search
     expose:
       - "7003"
+
     depends_on:
-      - eureka-server-grpc-server
+      eureka-server-grpc-server:
+        condition: service_healthy
+      elastic-search:
+        condition: service_healthy
+
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server-grpc-server:8761/eureka
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fs http://localhost:7003/actuator/health || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+
 
   redis-rl:
     image: redis:alpine
@@ -71,6 +124,19 @@ services:
     volumes:
       - redis-rl:/data
 
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+
+
   redis-l2:
     image: redis:alpine
     container_name: redis-cache-l2-minimum
@@ -79,30 +145,74 @@ services:
     volumes:
       - redis-cache-l2:/data
 
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+
+
   postgres:
     image: postgres:16-alpine
     container_name: postgres-sessions-minimum
+
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
     networks:
       - private-net
+
     volumes:
       - ./init-db:/docker-entrypoint-initdb.d
-      - postgres-sessions:/var/lib/postgresql/data 
+      - postgres-sessions:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+
 
   elastic-search:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: elastic-search-minimum
+
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
     networks:
       - private-net
+
     volumes:
       - es_data:/usr/share/elasticsearch/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fs http://localhost:9200/_cluster/health || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.4
@@ -112,23 +222,41 @@ services:
       - public-net
     ports:
       - "5601:5601"
+
     depends_on:
-      - elastic-search
+      elastic-search:
+        condition: service_healthy
+
     environment:
-      - ELASTICSEARCH_HOSTS=http://elastic-search:9200    
+      - ELASTICSEARCH_HOSTS=http://elastic-search:9200
+
 
   mariadb:
     image: mariadb
     container_name: mysql-images-metadata-minimum
+
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
     networks:
       - private-net
+
     volumes:
       - mysql-data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --silent"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 
 volumes:
   es_data:
