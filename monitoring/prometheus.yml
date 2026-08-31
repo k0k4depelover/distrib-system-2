@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:7000']
+        labels: {service: 'api-gateway'}
+
+  - job_name: 'cookies-auth'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['sesion-stateful-server:7001']
+        labels: {service: 'cookies-auth'}
+
+  - job_name: 'chat'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['web-socket-chat:7002']
+        labels: {service: 'chat'}
+
+
+  - job_name: 'elastic-search-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['elastic-search-server:7003']
+        labels: {service: 'elastic-search-server'}
+
+
