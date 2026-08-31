@@ -24,3 +24,17 @@ management:
     health:
       show-details: when-authorized
       show-components: when-authorized
+  
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+    distribution:
+      percentiles-histogram:
+        "http.server.requests": true
+
+      percentiles:
+        "http.server.requests":
+          - 0.99
+          - 0.95
+          - 0.5
