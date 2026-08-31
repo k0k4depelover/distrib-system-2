@@ -263,7 +263,7 @@ services:
     networks:
       - private-net
     volumes:
-      - /monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     command: 
       - '--config.file=/etc/prometheus/prometheus.yml'
