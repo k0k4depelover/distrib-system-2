@@ -12,7 +12,7 @@ scrape_configs:
   - job_name: 'cookies-auth'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['sesion-stateful-server:7001']
+      - targets: ['session-stateful-server:7001']
         labels: {service: 'cookies-auth'}
 
   - job_name: 'chat'

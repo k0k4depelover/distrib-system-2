@@ -67,7 +67,7 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public Boolean eliminarImagen(Long id, Long idUsuario) {
-        Optional<ImagenMD> imagenDelete = repository.findByIdAndOwnerId(id, idUsuario);
+        Optional<ImagenMD> imagenDelete = repository.findByIdAndIdUsuario(id, idUsuario);
         if(imagenDelete.isPresent()){
             storage.eliminar(imagenDelete.get().getNombreImagen());
             repository.delete(imagenDelete.get());
@@ -79,7 +79,7 @@ public class ImageServiceImpl implements ImageService{
 
     @Override
     public List<ImageResponseDTO> buscarImagenesDeUsuario(Long idUsuario) {
-        List<ImagenMD> listImages = repository.findAllByOwnerId(idUsuario);
+        List<ImagenMD> listImages = repository.findAllByIdUsuario(idUsuario);
         return listImages.stream().map(
             image -> new ImageResponseDTO(image.getId(), image.getFechaSubida(), image.getNombreOriginal(), image.getImageUrl(), image.getConfirmed())
         ).collect(Collectors.toList());

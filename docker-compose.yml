@@ -1,5 +1,6 @@
 networks:
   private-net:
+    internal: true
     driver: bridge
   public-net:
     driver: bridge
@@ -45,6 +46,9 @@ services:
     networks:
       - private-net
     build: ./cookies-auth
+
+    env_file:
+    - .env
     expose:
       - "7001"
 
@@ -92,6 +96,8 @@ services:
     networks:
       - private-net
     build: ./elastic-search
+    env_file:
+      - .env
     expose:
       - "7003"
 

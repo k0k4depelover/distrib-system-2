@@ -29,7 +29,7 @@ public class ImageCleaningScheduler {
     public void limpiarImagenesHuerfanas(){
         log.info("Iniciando CronJob: Limpieza de imagenes huerfanas...");
         LocalDateTime limit = LocalDateTime.now().minusHours(18);
-        List<ImagenMD> huerfanas= imageRepository.findByConfirmedFalseAndfechaSubidaBefore(limit); 
+        List<ImagenMD> huerfanas= imageRepository.findByConfirmedFalseAndFechaSubidaBefore(limit); 
         
         if (huerfanas.isEmpty()){
             log.info("No se encontraron imagenes para eliminar...");
