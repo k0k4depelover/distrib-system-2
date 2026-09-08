@@ -16,10 +16,10 @@ public interface ImageRepository extends JpaRepository<ImagenMD, Long>{
 public Optional<ImagenMD> findByIdUsuario(Long idUsuario);
     
     @Query("""
-            SELECT c
-            FROM ImagenMD
-            WHERE id = ?1
-            AND idUsuario = ?2
+            SELECT i
+            FROM ImagenMD i
+            WHERE i.id = ?1
+            AND i.idUsuario = ?2
             """)
     public Optional<ImagenMD> findByIdAndIdUsuario(Long id, Long idUsuario); 
 
@@ -29,7 +29,7 @@ public Optional<ImagenMD> findByIdUsuario(Long idUsuario);
         """
         UPDATE ImagenMD i
         SET i.confirmed=true
-        WHERE i.id = ?1 AND i.idUsuario = ?2 AND  i.confirmed=false;        
+        WHERE i.id = ?1 AND i.idUsuario = ?2 AND  i.confirmed=false        
         """)
     int confirmarImagenYExtraerImagen(Long idImagen, Long idUsuario);
     
@@ -38,9 +38,9 @@ public Optional<ImagenMD> findByIdUsuario(Long idUsuario);
 
     @Query("""
             SELECT i 
-            FROM ImagenMD
-                WHERE confirmed=FALSE
-                AND fechaSubida < ?1
+            FROM ImagenMD i
+                WHERE i.confirmed=FALSE
+                AND i.fechaSubida < ?1
             
             """)
     public List<ImagenMD> findByConfirmedFalseAndFechaSubidaBefore(LocalDateTime limit); 

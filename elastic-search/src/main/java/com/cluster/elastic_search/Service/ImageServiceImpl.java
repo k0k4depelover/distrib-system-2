@@ -32,12 +32,6 @@ public class ImageServiceImpl implements ImageService{
         
 
 
-
-    public ImageServiceImpl(ImageStorage storage, ImageService imageService, ImageRepository repository) {
-        this.storage = storage;
-        this.repository = repository;
-    }
-
     @Override
     @Transactional
     public ImageResponseDTO subirImagen(MultipartFile file, Long idUsuario) {
