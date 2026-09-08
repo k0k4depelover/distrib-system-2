@@ -1,7 +1,6 @@
 package com.cluster.elastic_search.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;

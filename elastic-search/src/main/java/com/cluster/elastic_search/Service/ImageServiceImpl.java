@@ -50,10 +50,10 @@ public class ImageServiceImpl implements ImageService{
             try {
                 storage.eliminar(nombreImagen); 
             } catch (Exception ignored) {
-
+                
             }
             
-            throw e; 
+            throw new ArchivoInvalidoExcepcion("No se pudo guardar la imagen");
         }
 
     }

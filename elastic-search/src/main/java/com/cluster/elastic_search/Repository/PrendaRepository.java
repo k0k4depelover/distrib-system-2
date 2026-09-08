@@ -3,17 +3,12 @@ package com.cluster.elastic_search.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import com.cluster.elastic_search.Document.Prenda;
-import com.cluster.elastic_search.Dto.PrendaRequest;
 
-public interface PrendaRepository extends CrudRepository<Prenda, Long>{
+public interface PrendaRepository extends ElasticsearchRepository<Prenda, Long>{
      List<Prenda> findByNombreContainingOrDescripcionContaining(String nombre, String descripcion);
-
      List<Prenda> findByTipo(String tipo);
-
-     Prenda save(PrendaRequest prenda);
-
      Optional<Prenda> findByIdAndUsuarioId(Long id, Long usuarioId);
 }
