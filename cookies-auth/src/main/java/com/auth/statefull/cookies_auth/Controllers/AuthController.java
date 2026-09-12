@@ -23,6 +23,7 @@ import com.auth.statefull.cookies_auth.Repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -102,6 +103,7 @@ public class AuthController {
 
     }
     
+    @Valid 
     @PostMapping("/register")
     public ResponseEntity<?> registerController(@RequestBody RegisterRequest registerRequest, HttpSession session) {
         Optional<User> userOptional =  userRepository.findByUsername(registerRequest.getUsername());

@@ -15,7 +15,9 @@ public class SecurityFilterConfig {
                     "/auth/register",
                                 "/auth/login",
                                 "/auth/validate",
-                                "/auth/logout"
+                                "/auth/logout",
+                                "/actuator/health/**",
+                                "/actuator/info"
                     ).permitAll().anyRequest().authenticated()
                 ).formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
