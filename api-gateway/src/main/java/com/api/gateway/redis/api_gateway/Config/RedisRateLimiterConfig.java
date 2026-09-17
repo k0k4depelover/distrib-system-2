@@ -10,8 +10,13 @@ import reactor.core.publisher.Mono;
 public class RedisRateLimiterConfig {
 @Bean
 public KeyResolver userAddressResolver() {
-    return exchange -> Mono.just(
-        exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
-    );
+    return exchange -> {
+        var remoteAddress = exchange.getRequest().getRemoteAddress();
+        String key = (remoteAddress != null && remoteAddress.getAddress() != null)
+            ? remoteAddress.getAddress().getHostAddress()
+            : null;
+        System.out.println("RATE LIMITER KEY RESUELTA: " + key);
+        return Mono.justOrEmpty(key);
+    };
 }
 }
