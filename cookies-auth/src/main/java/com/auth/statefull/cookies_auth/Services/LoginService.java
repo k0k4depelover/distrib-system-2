@@ -2,6 +2,7 @@ package com.auth.statefull.cookies_auth.Services;
 
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.auth.statefull.cookies_auth.Config.Exceptions.IllegalLoginException;
 import com.auth.statefull.cookies_auth.Dto.LoginRequest;
@@ -9,6 +10,7 @@ import com.auth.statefull.cookies_auth.Entity.User;
 
 import com.auth.statefull.cookies_auth.Repository.UserRepository;
 
+@Service 
 public class LoginService implements ILoginService {
 
     public final UserRepository userRepository;
@@ -16,7 +18,7 @@ public class LoginService implements ILoginService {
 
     public LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = null;
+        this.passwordEncoder = passwordEncoder;
 
     }
     @Override

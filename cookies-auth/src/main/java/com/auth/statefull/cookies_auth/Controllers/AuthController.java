@@ -13,8 +13,8 @@ import com.auth.statefull.cookies_auth.Dto.RegisterRequest;
 import com.auth.statefull.cookies_auth.Dto.UserSessionDto;
 import com.auth.statefull.cookies_auth.Entity.Role;
 import com.auth.statefull.cookies_auth.Entity.User;
+import com.auth.statefull.cookies_auth.Services.ILoginService;
 import com.auth.statefull.cookies_auth.Services.IRegisterService;
-import com.auth.statefull.cookies_auth.Services.LoginService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -33,9 +33,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/auth")
 public class AuthController {
     public final PasswordEncoder passwordEncoder;
-    public final LoginService loginService;
+    public final ILoginService loginService;
     public final IRegisterService registerService;
-    public AuthController(PasswordEncoder passwordEncoder, IRegisterService registerService, LoginService loginService) {
+    public AuthController(PasswordEncoder passwordEncoder, IRegisterService registerService, ILoginService loginService) {
         this.passwordEncoder = passwordEncoder;
         this.registerService = registerService;
         this.loginService= loginService;
@@ -76,19 +76,10 @@ public class AuthController {
             (String) session.getAttribute("ROLE")
         );
         
-        String hostname;
-
-        try{
-            hostname = InetAddress.getLocalHost().getHostName();
-        }
-        catch (Exception e){
-            hostname= "unknown";
-        }
         return ResponseEntity.ok(user);
 
     }
     
-    @Valid 
     @PostMapping("/register")
     public ResponseEntity<?> registerController(@Valid @RequestBody RegisterRequest registerRequest, HttpSession session) {
         User user = registerService.registerUser(registerRequest);
