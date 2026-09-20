@@ -2,12 +2,11 @@ package com.auth.statefull.cookies_auth.Dto;
 
 import java.util.List;
 
-import com.auth.statefull.cookies_auth.Entity.Role;
 
 public class RegisterRequest {
     private String username;
     private String password;
-    private List<Role> Roles;
+    private List<String> Roles;
     public String getUsername() {
         return username;
     }
@@ -20,10 +19,10 @@ public class RegisterRequest {
     public void setPassword(String password) {
         this.password = password;
     }
-    public List<Role> getRoles() {
+    public List<String> getRoles() {
         return Roles;
     }
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<String> roles) {
         Roles = roles;
     }
 

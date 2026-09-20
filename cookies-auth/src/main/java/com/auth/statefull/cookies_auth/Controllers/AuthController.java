@@ -20,6 +20,7 @@ import com.auth.statefull.cookies_auth.Entity.Role;
 import com.auth.statefull.cookies_auth.Entity.User;
 import com.auth.statefull.cookies_auth.Repository.RoleRepository;
 import com.auth.statefull.cookies_auth.Repository.UserRepository;
+import com.auth.statefull.cookies_auth.Services.RegisterService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -40,10 +41,12 @@ public class AuthController {
     public final UserRepository userRepository;
     public final RoleRepository roleRepository;
     public final PasswordEncoder passwordEncoder;
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public final RegisterService registerService;
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, RegisterService registerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.registerService = registerService;
     }
 
     @PostMapping("/login")
@@ -106,37 +109,8 @@ public class AuthController {
     @Valid 
     @PostMapping("/register")
     public ResponseEntity<?> registerController(@RequestBody RegisterRequest registerRequest, HttpSession session) {
-        Optional<User> userOptional =  userRepository.findByUsername(registerRequest.getUsername());
-
-        if(userOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El nombre de usuario no està disponible");
-
-        }
-
-        List<Role> rolesUserRequest = registerRequest.getRoles();
-        List<Role> rolesDb= new ArrayList<>();
-
-        for(Role roleRequest : rolesUserRequest){
-            Optional<Role> roleOptional = roleRepository.findById(roleRequest.getId());
-            if(roleOptional.isEmpty()){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("El rol ingresado no existe...");
-
-            }
-            rolesDb.add(roleOptional.get());
-        }
-
-        
-        String hashedPassword = passwordEncoder.encode(registerRequest.getPassword());
-        User userDB= new User();
-        userDB.setUsername(registerRequest.getUsername());
-        userDB.setPassword(hashedPassword);
-        userDB.setRoles(rolesDb);
-        userDB.setEnabled(true);
-
-        userRepository.save(userDB);
-
-        return ResponseEntity.ok(userDB);
-
+        User user = registerService.registerUser(registerRequest);
+        return ResponseEntity.ok(user);
     }
     
 
