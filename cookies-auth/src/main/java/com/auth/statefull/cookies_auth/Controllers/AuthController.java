@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginForCookie(@RequestBody LoginRequest loginRequest, HttpSession session) {
+    public ResponseEntity<?> loginForCookie(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
 
         User user= loginService.login(loginRequest);
 
