@@ -5,4 +5,5 @@ import com.auth.statefull.cookies_auth.Entity.User;
 
 public interface IRegisterService {
     public User registerUser(RegisterRequest registerRequest);
+    
 }

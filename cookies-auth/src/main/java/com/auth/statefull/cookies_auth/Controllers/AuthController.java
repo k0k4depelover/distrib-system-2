@@ -1,8 +1,6 @@
 package com.auth.statefull.cookies_auth.Controllers;
 
 import java.net.InetAddress;
-import java.util.Optional;
-
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +13,9 @@ import com.auth.statefull.cookies_auth.Dto.RegisterRequest;
 import com.auth.statefull.cookies_auth.Dto.UserSessionDto;
 import com.auth.statefull.cookies_auth.Entity.Role;
 import com.auth.statefull.cookies_auth.Entity.User;
-import com.auth.statefull.cookies_auth.Repository.RoleRepository;
-import com.auth.statefull.cookies_auth.Repository.UserRepository;
 import com.auth.statefull.cookies_auth.Services.IRegisterService;
+import com.auth.statefull.cookies_auth.Services.LoginService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -34,36 +32,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    public final UserRepository userRepository;
-    public final RoleRepository roleRepository;
     public final PasswordEncoder passwordEncoder;
+    public final LoginService loginService;
     public final IRegisterService registerService;
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, IRegisterService registerService) {
-        this.userRepository = userRepository;
+    public AuthController(PasswordEncoder passwordEncoder, IRegisterService registerService, LoginService loginService) {
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
         this.registerService = registerService;
+        this.loginService= loginService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginForCookie(@RequestBody LoginRequest loginRequest, HttpSession session) {
-        Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
 
-        if(user.isEmpty()){
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Credenciales incorrectas");
-        }
+        User user= loginService.login(loginRequest);
 
-        if(!passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
-        }
+        String userRoles = user.getRoles().stream().map(Role::getName).collect(Collectors.joining(","));
 
-
-        String userRoles = user.get().getRoles().stream().map(Role::getName).collect(Collectors.joining(","));
-
-        session.setAttribute("USER_ID", user.get().getId());
-        session.setAttribute("USERNAME", user.get().getUsername());
+        session.setAttribute("USER_ID", user.getId());
+        session.setAttribute("USERNAME", user.getUsername());
         session.setAttribute("ROLE", userRoles);
         
         return ResponseEntity.status(200).body("Login exitoso. Sesión creada.");

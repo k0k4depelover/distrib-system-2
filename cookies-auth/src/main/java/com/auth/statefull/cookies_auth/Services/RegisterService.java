@@ -1,13 +1,11 @@
 package com.auth.statefull.cookies_auth.Services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.auth.statefull.cookies_auth.Config.Exceptions.InvalidRoleException;
 import com.auth.statefull.cookies_auth.Config.Exceptions.RoleNotFoundException;
 import com.auth.statefull.cookies_auth.Config.Exceptions.UsernameTakenException;
 import com.auth.statefull.cookies_auth.Dto.RegisterRequest;
@@ -18,6 +16,8 @@ import com.auth.statefull.cookies_auth.Repository.UserRepository;
 
 @Service
 public class RegisterService implements IRegisterService {
+
+    private static final String DEFAULT_ROLE = "ROLE_USER";
 
     public final UserRepository userRepository;
     public final RoleRepository roleRepository;
@@ -37,23 +37,14 @@ public class RegisterService implements IRegisterService {
             throw new UsernameTakenException("El nombre de usuario no está disponible");
         }
 
-        List<String> rolesUserRequest = registerRequest.getRoles();
-        List<Role> rolesDb = new ArrayList<>();
-
-        for (String roleRequest : rolesUserRequest) {
-            if (roleRequest.isBlank()) {
-                throw new InvalidRoleException("Petición de rol inválida");
-            }
-            Role role = roleRepository.findByName(roleRequest)
-                    .orElseThrow(() -> new RoleNotFoundException("El rol ingresado no existe: " + roleRequest));
-            rolesDb.add(role);
-        }
+        Role defaultRole = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseThrow(() -> new RoleNotFoundException("El rol por defecto no está configurado en el sistema"));
 
         String hashedPassword = passwordEncoder.encode(registerRequest.getPassword());
         User userDB = new User();
         userDB.setUsername(registerRequest.getUsername());
         userDB.setPassword(hashedPassword);
-        userDB.setRoles(rolesDb);
+        userDB.setRoles(List.of(defaultRole));
         userDB.setEnabled(true);
 
         return userRepository.save(userDB);

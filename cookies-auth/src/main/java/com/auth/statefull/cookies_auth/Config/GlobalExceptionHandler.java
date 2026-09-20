@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.auth.statefull.cookies_auth.Config.Exceptions.IllegalLoginException;
 import com.auth.statefull.cookies_auth.Config.Exceptions.InvalidRoleException;
 import com.auth.statefull.cookies_auth.Config.Exceptions.RoleNotFoundException;
 import com.auth.statefull.cookies_auth.Config.Exceptions.UsernameTakenException;
@@ -27,5 +28,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleRoleNotFound(RoleNotFoundException ex){
         return ResponseEntity.status(HttpStatus.SC_CONFLICT).body(Map.of("error", ex.getMessage()));
     }
-
+    
+    @ExceptionHandler(IllegalLoginException.class)
+    public ResponseEntity<?> handleIllegalLogin(IllegalLoginException ex){
+        return ResponseEntity.status(HttpStatus.SC_CONFLICT).body(Map.of("error", ex.getMessage()));
+    }
 }
