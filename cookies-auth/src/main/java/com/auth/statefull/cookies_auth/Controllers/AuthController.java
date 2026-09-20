@@ -1,9 +1,6 @@
 package com.auth.statefull.cookies_auth.Controllers;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import java.util.stream.Collectors;
@@ -20,8 +17,7 @@ import com.auth.statefull.cookies_auth.Entity.Role;
 import com.auth.statefull.cookies_auth.Entity.User;
 import com.auth.statefull.cookies_auth.Repository.RoleRepository;
 import com.auth.statefull.cookies_auth.Repository.UserRepository;
-import com.auth.statefull.cookies_auth.Services.RegisterService;
-
+import com.auth.statefull.cookies_auth.Services.IRegisterService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -41,8 +37,8 @@ public class AuthController {
     public final UserRepository userRepository;
     public final RoleRepository roleRepository;
     public final PasswordEncoder passwordEncoder;
-    public final RegisterService registerService;
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, RegisterService registerService) {
+    public final IRegisterService registerService;
+    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, IRegisterService registerService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
@@ -108,7 +104,7 @@ public class AuthController {
     
     @Valid 
     @PostMapping("/register")
-    public ResponseEntity<?> registerController(@RequestBody RegisterRequest registerRequest, HttpSession session) {
+    public ResponseEntity<?> registerController(@Valid @RequestBody RegisterRequest registerRequest, HttpSession session) {
         User user = registerService.registerUser(registerRequest);
         return ResponseEntity.ok(user);
     }
